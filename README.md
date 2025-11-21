@@ -95,7 +95,7 @@ import * as fs from 'fs';
 const fileBuffer = fs.readFileSync('/path/to/file.pdf');
 
 // 1. upload a file to get its dataset
-// alternatively, use `await dataset.vectorize();` if dataset is alrady extracted
+// alternatively, use `await datasets.vectorize();` if dataset is alrady extracted
 const dataset = await subworkflow.vectorize(fileBuffer);
 
 // 2. query the document contextually to return matching pages
@@ -199,9 +199,9 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 When a `Job` is returned, you'll have to check the job status for the dataset manually.
 
 
-### Dataset Get
+### Datasets Get
 ```typescript
-.dataset.get(datasetId: string): Promise<Dataset | null>
+.datasets.get(datasetId: string): Promise<Dataset | null>
 ```
 * Returns a single dataset by Id
 
@@ -211,9 +211,9 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 **Returns**
 * `Dataset` (Dataset) - The dataset object.
 
-### Dataset Delete
+### Datasets Delete
 ```typescript
-.dataset.delete(dataset: Dataset | string): Promise<Dataset | null>
+.datasets.delete(dataset: Dataset | string): Promise<Dataset | null>
 ```
 * Marks a single dataset for deletion. This is the same as setting an immediate expiry date.
 * Api Reference: https://docs.subworkflow.ai/api-reference/delete-v1-datasets-id
@@ -226,7 +226,7 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 
 ### Dataset Vectorize
 ```typescript
-.dataset.vectorize(
+.datasets.vectorize(
     dataset: Dataset | string,
     opts?: {
         async?: boolean;
@@ -249,7 +249,7 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 
 ### Dataset Query
 ```typescript
-.dataset.query(
+.datasets.query(
     dataset: Dataset | string,
     opts?: {
         row?: string;
