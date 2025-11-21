@@ -1,7 +1,7 @@
 {
   "name": "@subworkflow/sdk",
   "description": "The official Javascript SDK for Subworkflow.ai",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "module": "dist/index.ts",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -10,6 +10,15 @@
     "name": "Subworkflow AI Limited",
     "email": "support@subworkflow.ai",
     "url": "https://subworkflow.ai"
+  },
+  "homepage": "https://github.com/Subworkflow-AI/subworkflow-js-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Subworkflow-AI/subworkflow-js-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Subworkflow-AI/subworkflow-js-sdk/issues",
+    "email": "support@subworkflow.ai"
   },
   "scripts": {
     "lint": "tsc --noEmit ./src/index.ts",

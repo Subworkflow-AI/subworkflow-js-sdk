@@ -23,7 +23,7 @@ The **Subworkflow-JS-SDK** is the official server-side javascript sdk for the [S
 
 Note: This sdk is not intended to be used in the browser and doing so may expose your API key to unauthorized use.
 
-Please use this project's [issue tracker](https://github.com/subworkflow/subworkflow-js-sdk/issues) for any issues and/or support relating to this library. You can also reach out to the team on [our Discord server](https://discord.gg/RCHeCPJnYw).
+Please use this project's [issue tracker](https://github.com/Subworkflow-AI/subworkflow-js-sdk/issues) for any issues and/or support relating to this library. You can also reach out to the team on [our Discord server](https://discord.gg/RCHeCPJnYw).
 
 ## What is Subworkflow.AI
 
