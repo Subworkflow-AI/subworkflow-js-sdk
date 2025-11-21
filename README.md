@@ -17,24 +17,28 @@
     </a>
 </div>
 
-# Subworkflow-SDK <img src="https://cdn.subworkflow.ai/marketing/logo-blue-32x32.png" height="24"/>
+# Subworkflow-JS-SDK <img src="https://cdn.subworkflow.ai/marketing/logo-blue-32x32.png" height="24"/>
 
-The **Subworkflow-SDK** is the official javascript sdk for the [Subworkflow.ai](https://subworkflow.ai) API written in Typescript.
+The **Subworkflow-JS-SDK** is the official server-side javascript sdk for the [Subworkflow.ai](https://subworkflow.ai) API written in Typescript.
 
 Note: This sdk is not intended to be used in the browser and doing so may expose your API key to unauthorized use.
 
 Please use this project's [issue tracker](https://github.com/subworkflow/subworkflow-js-sdk/issues) for any issues and/or support relating to this library. You can also reach out to the team on [our Discord server](https://discord.gg/RCHeCPJnYw).
 
+## What is Subworkflow.AI
+
+Subworkflow.AI is a RAG backend API designed and built to handle document RAG with large documents; where large documents are typically scanned PDFs, 1000+ pages, 300mb+ or a combination thereof. 
+
+Subworkflow.AI is able to split, index, store and vectorize these documents and provide a simple API to access, filter and search the resulting pages of one or more documents uploaded to the service. The aim is to handle this backend portion of the RAG application so developers can focus on the frontend.
+
+Subworkflow's document processing pipeline is also great for high frequency structured output for smaller documents (<300 page) where it's necessary to perform similar splitting and retrieval for bank statements, contracts and policy documents.
+
+Learn more by visiting our website at [https://subworkflow.ai](https://subworkflow.ai).
 
 ## Installation
 
 ```
 npm i --save @subworkflow/sdk
-
-// or alternatively...
-// bun add @subworkflow/sdk
-// yarn add @subworkflow/sdk
-// pnpm add @subworkflow/sdk
 ```
 
 ## Usage
@@ -57,8 +61,7 @@ const fileBuffer = fs.readFileSync('/path/to/file.pdf');
 const dataset = await subworkflow.extract(fileBuffer);
 
 // 2. retrieve a selection of pages from dataset
-const results = await subworkflow.dataset.query({
-    dataset: dataset,
+const results = await subworkflow.datasets.query(dataset, {
     row: 'jpg',
     cols: [1,2,3], // omit to retrieve all
     offset: 0,
@@ -137,13 +140,14 @@ console.log(`Pages cited for this answer are: ${results.map(datasetItem => datas
 ```typescript
 .extract(
     file: Blob,
-    opts?: {
+    opts: {
+        fileName: string;
         async?: boolean; 
         expiryInDays?: number;
         chunkSize?: number; 
         concurrency?: number;
     }
-): Promise<Job | null>
+): Promise<Dataset | Job>
 ```
 * Unless `async` is set to true, this function will perform polling on the `job` record automatically
 * For files over 100mb, this function automatically switches to Multipart Upload mode.
@@ -151,10 +155,11 @@ console.log(`Pages cited for this answer are: ${results.map(datasetItem => datas
 
 **Params**:
  * **file** (Blob) - *Required*. the document file to upload and extract
- * **opts?.async?** (boolean) - *Optional*. Set to true to skip auto-polling for job completion and receive the job record instead. Defaults to false.
- * **opts?.expiresInDays?** (number) - *Optional*. Overrides the number of days before file expiration. Default is maximum data rentention value for your subscription.
- * **opts?.chunkSize?** (number) - *Optional*. MultipartUpload only. Sets the part size for splitting. Defaults to 10mb.
- * **opts?.concurrency?** (number) - *Optional*. MultipartUpload only. Sets how many part uploads execute simultaneously. Defaults to 4.
+ * **opts.fileName** (boolean) - *Required*. Sets the filename for the uploaded file.
+ * **opts.async?** (boolean) - *Optional*. Set to true to skip auto-polling for job completion and receive the job record instead. Defaults to false.
+ * **opts.expiresInDays?** (number) - *Optional*. Overrides the number of days before file expiration. Default is maximum data rentention value for your subscription.
+ * **opts.chunkSize?** (number) - *Optional*. MultipartUpload only. Sets the part size for splitting. Defaults to 10mb.
+ * **opts.concurrency?** (number) - *Optional*. MultipartUpload only. Sets how many part uploads execute simultaneously. Defaults to 4.
 
 **Returns** either a `Dataset` or `Job`:
  * `Promise<Dataset>` (Dataset) - The dataset object, when `opts.async=false`.
@@ -166,13 +171,14 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 ```typescript
 .vectorize(
     file: Blob,
-    opts?: {
+    opts: {
+        fileName: string;
         async?: boolean; 
         expiryInDays?: number;
         chunkSize?: number; 
         concurrency?: number;
     }
-): Promise<Job | null>
+): Promise<Dataset | Job>
 ```
 * Unless `async` is set to true, this function will perform polling on the `job` record automatically.
 * For files over 100mb, this function automatically switches to Multipart Upload mode.
@@ -180,10 +186,11 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 
 **Params**:
  * **file** (blob) - *Required*. the document file to upload and vectorize
- * **opts?.async?** (boolean) - *Optional*. Set to true to skip auto-polling for job completion and receive the job record instead. Defaults to false.
- * **opts?.expiresInDays?** (number) - *Optional*. Overrides the number of days before file expiration. Default is maximum data rentention value for your subscription.
- * **opts?.chunkSize?** (number) - *Optional*. MultipartUpload only. Sets the part size for splitting. Defaults to 10mb.
- * **opts?.concurrency?** (number) - *Optional*. MultipartUpload only. Sets how many part uploads execute simultaneously. Defaults to 4.
+ * **opts.fileName** (boolean) - *Required*. Sets the filename for the uploaded file.
+ * **opts.async?** (boolean) - *Optional*. Set to true to skip auto-polling for job completion and receive the job record instead. Defaults to false.
+ * **opts.expiresInDays?** (number) - *Optional*. Overrides the number of days before file expiration. Default is maximum data rentention value for your subscription.
+ * **opts.chunkSize?** (number) - *Optional*. MultipartUpload only. Sets the part size for splitting. Defaults to 10mb.
+ * **opts.concurrency?** (number) - *Optional*. MultipartUpload only. Sets how many part uploads execute simultaneously. Defaults to 4.
 
 **Returns** either a `Dataset` or `Job`:
  * `Promise<Dataset>` (Dataset) - The dataset object, when `opts.async=false`.
@@ -212,7 +219,7 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 * Api Reference: https://docs.subworkflow.ai/api-reference/delete-v1-datasets-id
 
 **Params**:
-  * **dataset** (Dataset | string) - *Required*. A dataset object or the datasetId of the requested dataset
+  * **dataset** (Dataset | string) - *Required*. A dataset object or the dataset ID of the requested dataset
 
 **Returns**
 * `Dataset` (Dataset) - The dataset object.
@@ -263,7 +270,7 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
  * **opts.sort?** (string | string[]) - *optional*. DatasetItem property to sort results by, prepend `-` for desc order eg. `createdAt` for createdAt asc and `-createdAt` for createdAt desc. default is `createdAt` descending.
  * **opts.offset?** (number) - *optional*.  default is 0.
  * **opts.limit?** (number) - *optional*. Max 100. default is 10.
- * **opts.expiryInSeconds?** (number) - *optional*. default is 10 mins.
+ * **opts.expiryInSeconds?** (number) - *optional*. Overrides the expiration duration for the file share. default is 10 mins.
 
 **Returns**
 * `Array<DatasetItem>` (DatasetItem[]) - An array of matching DatasetItem objects.
@@ -289,7 +296,7 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
  * **sort?** (string | string[]) - *optional*. DatasetItem property to sort results by, prepend `-` for desc order eg. `createdAt` for createdAt asc and `-createdAt` for createdAt desc. default is `createdAt` descending.
  * **offset?** (number) - *optional*. default is 0.
  * **limit?** (number) - *optional*. default is 10. Max 100.
- * **expiryInSeconds?** (number) - *optional*. default is 10 mins.
+ * **expiryInSeconds?** (number) - *optional*. Overrides the expiration duration for the file share. default is 10 mins.
 
 **Returns**
 * `Array<DatasetItem>` (DatasetItem[]) - An array of matching datasetItem objects.
@@ -339,6 +346,7 @@ jobs.cancel(jobId: string): Promise<job | null>
 
 ## Licence
 
-This project repository is licensed under the GNU Affero General Public License v3.0 (See LICENSE file). Some dependencies may contain a different license so please refer to the relevant repositories for specific licences.
+This project repository is licensed under the MIT License (See LICENSE file). Some dependencies may contain a different license so please refer to the relevant repositories for specific licences.
 
-2025 &copy; Subworkflow AI Limited
+2025 &copy; Subworkflow AI Limited.
+The fastest way to build durable RAG applications.
