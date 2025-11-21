@@ -1,0 +1,31 @@
+{
+  "name": "@subworkflow/sdk",
+  "description": "The official Javascript SDK for Subworkflow.ai",
+  "version": "0.0.1",
+  "module": "dist/index.ts",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "license": "MIT",
+  "author": {
+    "name": "Subworkflow AI Limited",
+    "email": "support@subworkflow.ai",
+    "url": "https://subworkflow.ai"
+  },
+  "scripts": {
+    "lint": "tsc --noEmit ./src/index.ts",
+    "types": "tsc --project build.tsconfig.json",
+    "build": "rm -rf dist && bun bun.build.ts && bun run types",
+    "clean-dist": "rm -rf dist",
+    "prepublish": "bun run lint && bun run build",
+    "publish": "npm publish --access public"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "p-limit": "^7.2.0"
+  }
+}

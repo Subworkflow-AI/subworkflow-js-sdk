@@ -1,0 +1,43 @@
+import { describe, test, expect, beforeAll } from 'bun:test';
+import { Subworkflow } from '../src';
+import type { Dataset, Job } from '../src/lib/types';
+
+const { SUBWORKFLOW_API_KEY } = process.env;
+
+describe('datasets', () => {
+    const subworkfow = new Subworkflow({ apiKey: SUBWORKFLOW_API_KEY });
+    let dataset: Dataset | null;
+    beforeAll(async () => {
+        const file = Bun.file('./test/assets/small_5.pdf');
+        const response = await subworkfow.extract(file,{ fileName: 'small_5.pdf' });
+        dataset = response as Dataset;
+        if (!dataset.itemCount) throw new Error('Error occurred trying to create dataset');
+    },1000 * 30);
+
+    test('datasets.get', async () => {
+        const actual = await subworkfow.datasets.get(dataset!.id);
+        expect(actual?.fileName).toEqual(dataset?.fileName);
+        expect(actual?.fileSize).toEqual(dataset?.fileSize);
+    });
+
+    test('datasets.vectorize', async () => {
+        const job = await subworkfow.datasets.vectorize(dataset!, { async: true });
+        await subworkfow.jobs.poll(job!.id,30);
+        const expected = await subworkfow.jobs.get(job!.id);
+        expect(expected?.type).toBe('datasets/vectorize');
+        expect(expected?.status).toBe('SUCCESS');
+    });
+
+    test('datasets.delete', async () => {
+        const response = await subworkfow.datasets.delete(dataset!);
+        expect(Number(response?.expiresAt)).toBeLessThan((new Date()).getTime());
+    });
+
+    test('datasets.query', async () => {
+        const results = await subworkfow.datasets.query(dataset!, {
+            row: 'jpg',
+            cols: [3,4,5],
+        });
+        expect(results).toHaveLength(3);
+    });
+});
