@@ -61,7 +61,7 @@ const fileBuffer = fs.readFileSync('/path/to/file.pdf');
 const dataset = await subworkflow.extract(fileBuffer);
 
 // 2. retrieve a selection of pages from dataset
-const results = await subworkflow.datasets.query(dataset, {
+const results = await subworkflow.datasets.getItems(dataset, {
     row: 'jpg',
     cols: [1,2,3], // omit to retrieve all
     offset: 0,
