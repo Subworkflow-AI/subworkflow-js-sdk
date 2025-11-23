@@ -8,14 +8,14 @@ export class DatasetsAPI {
         private readonly jobs: JobsAPI
     ){}
 
-    async get(datasetId: string, opts?: { expiryInSeconds?: number }) {
+    get = async (datasetId: string, opts?: { expiryInSeconds?: number }) => {
         const req = await this.api.$get(`/datasets/${datasetId}`,{ query: opts });
         const res = await req.json() as ApiResponse<Dataset>;
         if (res.error) throw new Error(res.error);
         return res.data || null;
     }
 
-    async delete(dataset: Dataset | string) {
+    delete = async (dataset: Dataset | string) => {
         const datasetId = typeof dataset === 'string' ? dataset : dataset.id;
         const req = await this.api.$delete(`/datasets/${datasetId}`);
         const res = await req.json() as ApiResponse<Dataset>;
@@ -23,7 +23,7 @@ export class DatasetsAPI {
         return res.data || null;
     }
 
-    async vectorize(dataset: Dataset | string, opts?: { async?: boolean }) {
+    vectorize = async (dataset: Dataset | string, opts?: { async?: boolean }) => {
         const datasetId = typeof dataset === 'string' ? dataset : dataset.id;
         const req = await this.api.$post(`/datasets/${datasetId}/vectorize`);
         const res = await req.json() as ApiResponse<Job>;
@@ -36,7 +36,31 @@ export class DatasetsAPI {
         return datasetResponse;
     }
 
-    async query(
+    list = async (opts?: {
+        type?: "doc",
+        sort?: string | string[];
+        offset?: number;
+        limit?: number;
+        expiryInSeconds?: number;
+    }) => {
+        const _opts = { ...opts };
+        if (opts?.type && opts?.type !== 'doc') throw new Error('Invalid value for type. Only "doc" is supported.');
+        _opts.type = 'doc';
+        const query = opts
+            ? Object.keys(_opts).reduce((acc,key) => {
+                const value = _opts[key as keyof typeof opts];
+                if (!value) return acc;
+                acc[key] = Array.isArray(value) ? value.join(',') : value;
+                return acc;
+            },{} as Record<string,string|number>)
+            : undefined;
+        const req = await this.api.$get(`/datasets`,{ query });
+        const res = await req.json() as ApiResponse<DatasetItem[]>;
+        if (res.error) throw new Error(res.error);
+        return res.data || null;
+    }
+
+     getItems = async (
         dataset: Dataset | string,
         opts?: {
             row?: string;
@@ -46,7 +70,7 @@ export class DatasetsAPI {
             limit?: number;
             expiryInSeconds?: number;
         }
-    ) {
+    ) => {
         const datasetId = typeof dataset === 'string' ? dataset : dataset.id;
         const query = opts
             ? Object.keys(opts).reduce((acc,key) => {

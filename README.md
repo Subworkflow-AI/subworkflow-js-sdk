@@ -198,6 +198,29 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 
 When a `Job` is returned, you'll have to check the job status for the dataset manually.
 
+### Datasets List
+```typescript
+.datasets.list(
+    opts?: {
+        type?: "doc",
+        sort?: string | string[];
+        offset?: number;
+        limit?: number;
+        expiryInSeconds?: number;
+    }
+): Promise<DatasetItem[]>;
+```
+* List all available Datasets (documents) in current workspace
+
+**Params**:
+ * **opts?.type** (Dataset | string) - *Required*. This is always "doc" for now.
+ * **opts?.sort?** (string | string[]) - *optional*. Dataset property to sort results by, prepend `-` for desc order eg. `createdAt` for createdAt asc and `-createdAt` for createdAt desc. default is `createdAt` descending.
+ * **opts.offset?** (number) - *optional*.  default is 0.
+ * **opts.limit?** (number) - *optional*. Max 100. default is 10.
+ * **opts.expiryInSeconds?** (number) - *optional*. Overrides the expiration duration for the file share. default is 10 mins.
+
+**Returns**
+* `Array<Dataset>` (Dataset[]) - An array of matching Dataset objects.
 
 ### Datasets Get
 ```typescript
@@ -247,9 +270,9 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 
 When a `Job` is returned, you'll have to check the job status for the dataset manually.
 
-### Dataset Query
+### Datasets Get Items
 ```typescript
-.datasets.query(
+.datasets.getItems(
     dataset: Dataset | string,
     opts?: {
         row?: string;
@@ -323,9 +346,9 @@ jobs.cancel(jobId: string): Promise<job | null>
 **Returns**
 * `Job` (Job) - a Job object
 
-### Jobs Query
+### Jobs List
 ```typescript
-.jobs.query(opts?: {
+.jobs.list(opts?: {
     statuses?: string | string[];
     types?: string | string[];
     offset?: number;

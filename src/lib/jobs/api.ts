@@ -6,7 +6,7 @@ export class JobsAPI {
         private readonly api: ApiClient
     ){}
 
-    async poll(job: Job | string, maxPollingCount = 60 * 3) {
+    poll = async (job: Job | string, maxPollingCount = 60 * 3) => {
         const jobId = typeof job === 'string' ? job : job.id;
         if (!jobId.startsWith('dsj_')) throw new Error('Invalid job ID');
 
@@ -28,7 +28,7 @@ export class JobsAPI {
         return jobResponse?.data ?? null;
     }
 
-    async get(jobId: string) {
+    get = async (jobId: string) => {
         if (!jobId.startsWith('dsj_')) throw new Error('Invalid job ID');
         const req = await this.api.$get(`/jobs/${jobId}`);
         const res = await req.json() as ApiResponse<Job>;
@@ -36,7 +36,7 @@ export class JobsAPI {
         return res.data || null;
     }
 
-    async cancel(job: Job | string) {
+    cancel = async (job: Job | string) => {
         const jobId = typeof job === 'string' ? job : job.id;
         if (!jobId.startsWith('dsj_')) throw new Error('Invalid job ID');
         const req = await this.api.$delete(`/jobs/${jobId}`);
@@ -45,12 +45,12 @@ export class JobsAPI {
         return res.data || null;
     }
 
-    async query(opts?: {
+    list = async (opts?: {
         statuses?: string | string[];
         types?: string[],
         offset?: number;
         limit?: number;
-    }) {
+    }) => {
         const query = opts
             ? Object.keys(opts).reduce((acc,key) => {
                 const value = opts[key as keyof typeof opts];

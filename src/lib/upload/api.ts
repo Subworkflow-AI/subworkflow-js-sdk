@@ -42,11 +42,11 @@ export class UploadAPI {
     ) {
     }
 
-    isMultipartUploadThreshold(fileSize: number) {
+    isMultipartUploadThreshold = (fileSize: number) => {
         return fileSize > 1024 * 1024 * 100;
     }
 
-    async uploadSession(file: Blob, opts: UploadSessionOpts) {
+    uploadSession = async (file: Blob, opts: UploadSessionOpts) => {
         const _fileExt = path.extname(opts.fileName);
         const fileExt = _fileExt.replace('.', '');
         const fileName = path.basename(opts.fileName).replace(_fileExt,'');
@@ -69,7 +69,7 @@ export class UploadAPI {
         return job;
     }
 
-    async extract(fileInput: FileLike, opts: ExtractRequestOpts) {
+    extract = async (fileInput: FileLike, opts: ExtractRequestOpts) => {
         let job: Job | undefined;
         const { blob: file, size: fileSize } = await normalizeFile(fileInput);
 
@@ -105,7 +105,7 @@ export class UploadAPI {
         return dataset;
     }
 
-    async vectorize(fileInput: FileLike, opts: VectorizeRequestOpts) {
+    vectorize = async (fileInput: FileLike, opts: VectorizeRequestOpts) => {
         let job: Job | undefined;
         const { blob: file, size: fileSize } = await normalizeFile(fileInput);
 

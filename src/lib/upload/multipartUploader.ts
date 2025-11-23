@@ -30,7 +30,7 @@ class MultipartUploader <T>{
         return this.key;
     }
 
-    public async start(params: UploadSessionStartRequest) {
+    public start = async (params: UploadSessionStartRequest) => {
         this.uploadedParts = [];
         const formData = {
             fileName: params.fileName,
@@ -46,10 +46,10 @@ class MultipartUploader <T>{
         this.key = response.data.key;
     }
 
-    private async sendChunk(
+    private sendChunk = async (
          partNumber: number,
          file: Blob
-    ): Promise<void> {
+    ): Promise<void> => {
         if (!this.key) throw new Error('Upload session not started. Call start() first.');
 
         const formData = new FormData();
@@ -65,7 +65,7 @@ class MultipartUploader <T>{
         this.uploadedParts.push(part);
     }
 
-    public async append(data: Blob | Buffer | ArrayBuffer): Promise<void> {
+    public append = async (data: Blob | Buffer | ArrayBuffer): Promise<void> => {
         const limiter = pLimit(this.opts.concurrency ?? 4);
 
         const totalSize = (data as any).size ?? (data as any).byteLength;
@@ -98,7 +98,7 @@ class MultipartUploader <T>{
         await Promise.all(jobs);
     }
 
-    public async end() {
+    public end = async () => {
         if (!this.key) throw new Error('No active session to end.');
         const sortedParts = this.uploadedParts.sort((a, b) => a.partNumber - b.partNumber);
         const formData = {
@@ -111,7 +111,7 @@ class MultipartUploader <T>{
         return response;
     }
 
-    public async abort(): Promise<void> {
+    public abort = async (): Promise<void> => {
         if (!this.key) console.warn('Attempted to abort, but no active session found.');
         const formData = { key: this.key };
         await this.api.$post(`/upload_session/abort`, { form: formData });

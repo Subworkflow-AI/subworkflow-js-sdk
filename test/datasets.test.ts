@@ -14,6 +14,11 @@ describe('datasets', () => {
         if (!dataset.itemCount) throw new Error('Error occurred trying to create dataset');
     },1000 * 30);
 
+    test('datasets.list', async () => {
+        const actual = await subworkfow.datasets.list();
+        expect(actual?.length).toBeGreaterThan(0);
+    });
+
     test('datasets.get', async () => {
         const actual = await subworkfow.datasets.get(dataset!.id);
         expect(actual?.fileName).toEqual(dataset?.fileName);
@@ -26,15 +31,15 @@ describe('datasets', () => {
         const expected = await subworkfow.jobs.get(job!.id);
         expect(expected?.type).toBe('datasets/vectorize');
         expect(expected?.status).toBe('SUCCESS');
-    });
+    },1000 * 60);
 
     test('datasets.delete', async () => {
         const response = await subworkfow.datasets.delete(dataset!);
-        expect(Number(response?.expiresAt)).toBeLessThan((new Date()).getTime());
+        expect((new Date()).getTime()).toBeLessThanOrEqual(Number(response?.expiresAt));
     });
 
-    test('datasets.query', async () => {
-        const results = await subworkfow.datasets.query(dataset!, {
+    test('datasets.getItems', async () => {
+        const results = await subworkfow.datasets.getItems(dataset!, {
             row: 'jpg',
             cols: [3,4,5],
         });

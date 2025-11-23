@@ -13,7 +13,7 @@ export class ApiClient {
         if (!this.opts.apiKey) throw new Error('apiKey must be set.');
     }
 
-    private async _fetch<T extends Record<string, any>>(
+    private _fetch = async <T extends Record<string, any>>(
         method: 'get' | 'post' | 'delete',
         route: string,
         input?: {
@@ -25,7 +25,7 @@ export class ApiClient {
             'x-api-key'?: string;
             'Content-Type'?: string;
         }
-     ) {
+     ) => {
         const _route = route.startsWith('/') ? route : `/${route}`;
         const url = new URL(this.opts?.baseUrl + _route);
         const _headers = {
@@ -60,7 +60,7 @@ export class ApiClient {
         return req;
     }
 
-    async $get<T extends Record<string, any>>(
+    $get = async <T extends Record<string, any>>(
         route: string,
         input?: {
             query?: T,
@@ -70,10 +70,10 @@ export class ApiClient {
         headers?: {
             'Content-Type'?: string;
         }
-    ) {
+    ) => {
         return this._fetch('get',route,input,headers);
     }
-    async $post<T extends Record<string, any>>(
+    $post = async <T extends Record<string, any>>(
         route: string,
         input?: {
             query?: T,
@@ -83,10 +83,10 @@ export class ApiClient {
         headers?: {
             'Content-Type'?: string;
         }
-    ) {
+    ) => {
         return this._fetch('post',route,input,headers);
     }
-    async $delete<T extends Record<string, any>>(
+    $delete = async <T extends Record<string, any>>(
         route: string,
         input?: {
             query?: T,
@@ -96,7 +96,7 @@ export class ApiClient {
         headers?: {
             'Content-Type'?: string;
         }
-    ) {
+    ) => {
         return this._fetch('delete',route,input,headers);
     }
 };

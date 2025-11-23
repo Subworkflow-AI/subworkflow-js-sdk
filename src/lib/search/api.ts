@@ -7,7 +7,7 @@ export class SearchAPI {
         private readonly api: ApiClient
     ){}
 
-    async search(opts: SearchOpts) {
+    search = async (opts: SearchOpts) => {
         const json = {
             ...opts,
             datasets: opts.datasets
