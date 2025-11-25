@@ -69,26 +69,48 @@ export class UploadAPI {
         return job;
     }
 
-    extract = async (fileInput: FileLike, opts: ExtractRequestOpts) => {
+    _sync = async (
+        jobType: 'extract' | 'vectorize',
+        input: FileLike | URL,
+        opts: ExtractRequestOpts | VectorizeRequestOpts
+    ) => {
         let job: Job | undefined;
-        const { blob: file, size: fileSize } = await normalizeFile(fileInput);
+        let fileLike: NormalizedFile | undefined;
+        let fileSize: number | undefined
+        const isFileUpload = !(input instanceof URL);
 
-        const isMultipartUpload = this.isMultipartUploadThreshold(fileSize);
-        if (isMultipartUpload) {
-            job = await this.uploadSession(file, {
-                jobType: 'extract',
-                fileName: opts.fileName,
-                chunkSize: opts.chunkSize ?? 1024 * 1024 * 10,
-                concurrency: opts.concurrency ?? 4,
-                expiryInDays: opts.expiryInDays ?? 90
-            });
+        if (isFileUpload) {
+            fileLike = await normalizeFile(input);
+            fileSize = fileLike.size;
+
+            const isMultipartUpload = this.isMultipartUploadThreshold(fileSize);
+            if (isMultipartUpload) {
+                job = await this.uploadSession(fileLike.blob, {
+                    jobType: jobType,
+                    fileName: opts.fileName,
+                    chunkSize: opts.chunkSize ?? 1024 * 1024 * 10,
+                    concurrency: opts.concurrency ?? 4,
+                    expiryInDays: opts.expiryInDays ?? 90
+                });
+            } else {
+                const formData = new FormData();
+                if (opts.expiryInDays !== undefined) formData.append('expiryInDays', String(opts.expiryInDays));
+                formData.append('file', fileLike.blob, opts.fileName);
+                const req = await this.api.$post(`/${jobType}`,{ form: formData });
+                const res = await req.json() as ApiResponse<Job>;
+                if (res.error) throw new Error(JSON.stringify(res.error));
+                job = res.data;
+            }
         } else {
+            const head = await fetch(input,{ method: 'head' });
+            if (!head.ok) throw new Error('Unable to fetch input url metadata. Is the file accessible?');
+            const contentLength = head.headers.get('content-length');
+            fileSize = !Number.isNaN(Number(contentLength)) ? Number(contentLength) : undefined;
+
             const formData = new FormData();
             if (opts.expiryInDays !== undefined) formData.append('expiryInDays', String(opts.expiryInDays));
-            formData.append('file', file, opts.fileName);
-
-            const req = await this.api.$post(`/extract`,{ form: formData });
-
+            formData.append('url', input.toString());
+            const req = await this.api.$post(`/${jobType}`,{ form: formData });
             const res = await req.json() as ApiResponse<Job>;
             if (res.error) throw new Error(JSON.stringify(res.error));
             job = res.data;
@@ -97,7 +119,7 @@ export class UploadAPI {
         if (!job?.id) throw new Error('Expected job but got none');
         if (opts.async) return job;
 
-        let maxPollingCount = Math.round(fileSize/1024/1024) * 45;
+        let maxPollingCount = fileSize ? Math.round(fileSize/1024/1024) * 45 : 500;
         const jobResponse = await this.jobs.poll(job, maxPollingCount < 15 ? 15 : maxPollingCount);
 
         if (!jobResponse?.datasetId) throw new Error(`Expected dataset after job polling but got none. ${jobResponse}`);
@@ -105,38 +127,11 @@ export class UploadAPI {
         return dataset;
     }
 
-    vectorize = async (fileInput: FileLike, opts: VectorizeRequestOpts) => {
-        let job: Job | undefined;
-        const { blob: file, size: fileSize } = await normalizeFile(fileInput);
+    extract = async (input: FileLike | URL, opts: ExtractRequestOpts) => {
+        return this._sync('extract',input,opts);
+    }
 
-        const isMultipartUpload = this.isMultipartUploadThreshold(fileSize);
-        if (isMultipartUpload) {
-            job = await this.uploadSession(file, {
-                jobType: 'vectorize',
-                fileName: opts.fileName,
-                chunkSize: opts.chunkSize ?? 1024 * 1024 * 10,
-                concurrency: opts.concurrency ?? 4,
-                expiryInDays: opts.expiryInDays ?? 90
-            });
-        } else {
-            const formData = new FormData();
-            if (opts.expiryInDays !== undefined) formData.append('expiryInDays', String(opts.expiryInDays));
-            formData.append('file', file, opts.fileName);
-
-            const req = await this.api.$post(`/vectorize`,{ form: formData });
-            const res = await req.json() as ApiResponse<Job>;
-            if (res.error) throw new Error(res.error);
-            job = res.data;
-        }
-
-        if (!job?.id) throw new Error('Expected job but got none');
-        if (opts.async) return job;
-
-        let maxPollingCount = Math.round(fileSize/1024/1024) * 45;
-        const jobResponse = await this.jobs.poll(job, maxPollingCount < 1 ? 15 : maxPollingCount);
-
-        if (!jobResponse?.datasetId) throw new Error(`Expected dataset after job polling but got none. ${jobResponse}`);
-        const dataset = await this.datasets.get(jobResponse.datasetId);
-        return dataset;
+    vectorize = async (fileInput: FileLike | URL, opts: VectorizeRequestOpts) => {
+        return this._sync('vectorize',fileInput,opts);
     }
 }

@@ -139,7 +139,7 @@ console.log(`Pages cited for this answer are: ${results.map(datasetItem => datas
 ### Extract
 ```typescript
 .extract(
-    file: Blob,
+    input: Blob | URL,
     opts: {
         fileName: string;
         async?: boolean; 
@@ -154,7 +154,7 @@ console.log(`Pages cited for this answer are: ${results.map(datasetItem => datas
 * API reference: https://docs.subworkflow.ai/api-reference/post-v1-extract
 
 **Params**:
- * **file** (Blob) - *Required*. the document file to upload and extract
+ * **input** (Blob) - *Required*. the document file or URL to upload and extract. If URL, it must be publicly accessible.
  * **opts.fileName** (boolean) - *Required*. Sets the filename for the uploaded file.
  * **opts.async?** (boolean) - *Optional*. Set to true to skip auto-polling for job completion and receive the job record instead. Defaults to false.
  * **opts.expiresInDays?** (number) - *Optional*. Overrides the number of days before file expiration. Default is maximum data rentention value for your subscription.
@@ -170,7 +170,7 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 ### Vectorize
 ```typescript
 .vectorize(
-    file: Blob,
+    input: Blob | URL,
     opts: {
         fileName: string;
         async?: boolean; 
@@ -185,7 +185,7 @@ When a `Job` is returned, you'll have to check the job status for the dataset ma
 * Api Reference: https://docs.subworkflow.ai/api-reference/post-v1-vectorize
 
 **Params**:
- * **file** (blob) - *Required*. the document file to upload and vectorize
+ * **input** (blob) - *Required*. the document file or url to upload and vectorize. If URL, must be publicly accessible.
  * **opts.fileName** (boolean) - *Required*. Sets the filename for the uploaded file.
  * **opts.async?** (boolean) - *Optional*. Set to true to skip auto-polling for job completion and receive the job record instead. Defaults to false.
  * **opts.expiresInDays?** (number) - *Optional*. Overrides the number of days before file expiration. Default is maximum data rentention value for your subscription.

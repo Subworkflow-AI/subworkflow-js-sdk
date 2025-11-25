@@ -5,28 +5,34 @@ import type { Dataset, Job } from '../src/lib/types';
 const { SUBWORKFLOW_API_KEY } = process.env;
 
 describe('uploads', () => {
-    test('extract (sync)', async () => {
+    test('extract (file,sync)', async () => {
         const subworkfow = new Subworkflow({ apiKey: SUBWORKFLOW_API_KEY });
         const file = Bun.file('./test/assets/small_5.pdf');
         const dataset = await subworkfow.extract(file,{ fileName: 'small_5.pdf' });
         expect((dataset as Dataset).itemCount).toEqual(5);
     }, 1000 * 30);
 
-    test('extract (async)', async () => {
+    test('extract (file,async)', async () => {
         const subworkfow = new Subworkflow({ apiKey: SUBWORKFLOW_API_KEY });
         const file = Bun.file('./test/assets/small_5.pdf');
         const job = await subworkfow.extract(file,{ fileName: 'small_5.pdf', async: true });
         expect((job as Job).type).toEqual('datasets/extract');
     }, 1000 * 30);
 
-    test('vectorize (sync)', async () => {
+    test('extract (url,sync)', async () => {
+        const subworkfow = new Subworkflow({ apiKey: SUBWORKFLOW_API_KEY });
+        const dataset = await subworkfow.extract(new URL("https://bitcoin.org/bitcoin.pdf"), { fileName: 'bitcoin.pdf' });
+        expect((dataset as Dataset).itemCount).toEqual(9);
+    }, 1000 * 30);
+
+    test('vectorize (file,sync)', async () => {
         const subworkfow = new Subworkflow({ apiKey: SUBWORKFLOW_API_KEY });
         const file = Bun.file('./test/assets/small_5.pdf');
         const dataset = await subworkfow.vectorize(file,{ fileName: 'small_5.pdf', expiryInDays: 1 });
         expect((dataset as Dataset).itemCount).toEqual(5);
     }, 1000 * 30);
 
-    test('vectorize (async)', async () => {
+    test('vectorize (file,async)', async () => {
         const subworkfow = new Subworkflow({ apiKey: SUBWORKFLOW_API_KEY });
         const file = Bun.file('./test/assets/small_5.pdf');
         const job = await subworkfow.vectorize(file,{ fileName: 'small_5.pdf', expiryInDays: 1, async: true });
