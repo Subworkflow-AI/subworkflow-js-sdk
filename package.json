@@ -14,7 +14,7 @@
   "homepage": "https://github.com/Subworkflow-AI/subworkflow-js-sdk",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Subworkflow-AI/subworkflow-js-sdk.git"
+    "url": "git+ssh://git@github.com/Subworkflow-AI/subworkflow-js-sdk.git"
   },
   "bugs": {
     "url": "https://github.com/Subworkflow-AI/subworkflow-js-sdk/issues",
