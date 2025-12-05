@@ -26,10 +26,12 @@
     "build": "rm -rf dist && bun bun.build.ts && bun run types",
     "clean-dist": "rm -rf dist",
     "prepublish": "bun run lint && bun run build",
-    "publish": "npm publish --access public"
+    "publish": "npm publish --access public",
+    "release": "release-it"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "release-it": "^19.0.6"
   },
   "peerDependencies": {
     "typescript": "^5"
