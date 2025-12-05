@@ -32,6 +32,7 @@ export type Dataset = {
 
 export type DatasetItem = {
     id: string;
+    datasetId: string;
     col: number;
     row: string;
     createdAt: number;
