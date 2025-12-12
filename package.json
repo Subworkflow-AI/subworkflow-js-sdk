@@ -1,7 +1,7 @@
 {
   "name": "@subworkflow/sdk",
   "description": "The official Javascript SDK for Subworkflow.ai",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
