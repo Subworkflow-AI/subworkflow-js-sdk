@@ -10,7 +10,7 @@ export class SearchAPI {
     search = async (opts: SearchOpts) => {
         const json = {
             ...opts,
-            datasets: opts.datasets
+            datasetIds: opts.datasets
                 ? Array.isArray(opts.datasets)
                     ? opts.datasets.map(item => typeof item === 'string' ? item : item.id)
                     : typeof opts.datasets === 'string' ? [opts.datasets] : [opts.datasets.id]
