@@ -102,10 +102,13 @@ export class UploadAPI {
                 job = res.data;
             }
         } else {
-            const head = await fetch(input,{ method: 'head' });
-            if (!head.ok) throw new Error('Unable to fetch input url metadata. Is the file accessible?');
-            const contentLength = head.headers.get('content-length');
-            fileSize = !Number.isNaN(Number(contentLength)) ? Number(contentLength) : undefined;
+            let contentLength = null;
+            if (!opts.skipUrlCheck) {
+                const head = await fetch(input,{ method: 'head' });
+                if (!head.ok) throw new Error('Unable to fetch input url metadata. Is the file accessible?');
+                contentLength = head.headers.get('content-length');
+            }
+            fileSize = contentLength && !Number.isNaN(Number(contentLength)) ? Number(contentLength) : undefined;
 
             const formData = new FormData();
             if (opts.expiryInDays !== undefined) formData.append('expiryInDays', String(opts.expiryInDays));

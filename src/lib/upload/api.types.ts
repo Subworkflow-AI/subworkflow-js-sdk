@@ -11,6 +11,7 @@ export type ExtractRequestOpts = {
     expiryInDays?: number;
     chunkSize?: number; 
     concurrency?: number;
+    skipUrlCheck?: boolean;
 };
 
 export type VectorizeRequestOpts = {
@@ -19,4 +20,5 @@ export type VectorizeRequestOpts = {
     expiryInDays?: number;
     chunkSize?: number; 
     concurrency?: number;
+    skipUrlCheck?: boolean;
 };
