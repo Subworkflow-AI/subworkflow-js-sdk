@@ -1,14 +1,14 @@
 export type UploadSessionOpts = {
     fileName: string;
     jobType: 'extract' | 'vectorize';
-    expiryInDays?: number;
+    expiresInDays?: number;
     chunkSize?: number; 
     concurrency?: number;
 }
 export type ExtractRequestOpts = {
     fileName: string;
     async?: boolean;
-    expiryInDays?: number;
+    expiresInDays?: number;
     chunkSize?: number; 
     concurrency?: number;
     skipUrlCheck?: boolean;
@@ -17,7 +17,7 @@ export type ExtractRequestOpts = {
 export type VectorizeRequestOpts = {
     fileName: string;
     async?: boolean;
-    expiryInDays?: number;
+    expiresInDays?: number;
     chunkSize?: number; 
     concurrency?: number;
     skipUrlCheck?: boolean;

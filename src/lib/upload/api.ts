@@ -60,7 +60,7 @@ export class UploadAPI {
             fileExt: fileExt,
             fileType: file.type,
             jobType: opts.jobType,
-            expiryInDays: opts.expiryInDays,
+            expiresInDays: opts.expiresInDays,
         });
         await uploader.append(file);
         const res = await uploader.end();
@@ -90,11 +90,11 @@ export class UploadAPI {
                     fileName: opts.fileName,
                     chunkSize: opts.chunkSize ?? 1024 * 1024 * 10,
                     concurrency: opts.concurrency ?? 4,
-                    expiryInDays: opts.expiryInDays ?? 90
+                    expiresInDays: opts.expiresInDays ?? 90
                 });
             } else {
                 const formData = new FormData();
-                if (opts.expiryInDays !== undefined) formData.append('expiryInDays', String(opts.expiryInDays));
+                if (opts.expiresInDays !== undefined) formData.append('expiresInDays', String(opts.expiresInDays));
                 formData.append('file', fileLike.blob, opts.fileName);
                 const req = await this.api.$post(`/${jobType}`,{ form: formData });
                 const res = await req.json() as ApiResponse<Job>;
@@ -111,7 +111,7 @@ export class UploadAPI {
             fileSize = contentLength && !Number.isNaN(Number(contentLength)) ? Number(contentLength) : undefined;
 
             const formData = new FormData();
-            if (opts.expiryInDays !== undefined) formData.append('expiryInDays', String(opts.expiryInDays));
+            if (opts.expiresInDays !== undefined) formData.append('expiresInDays', String(opts.expiresInDays));
             formData.append('url', input.toString());
             const req = await this.api.$post(`/${jobType}`,{ form: formData });
             const res = await req.json() as ApiResponse<Job>;

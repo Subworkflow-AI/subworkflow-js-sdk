@@ -5,7 +5,7 @@ export type UploadSessionStartRequest = {
     fileName: string;
     fileExt: string;
     fileType: string;
-    expiryInDays?: number;
+    expiresInDays?: number;
 };
 
 export type UploadSessionStartResponse = {
