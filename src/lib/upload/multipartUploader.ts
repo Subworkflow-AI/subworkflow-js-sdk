@@ -37,7 +37,7 @@ class MultipartUploader <T>{
             fileExt: params.fileExt,
             fileType: params.fileType,
             jobType: params.jobType,
-            expiryInDays: params.expiryInDays ? String(params.expiryInDays) : undefined
+            expiresInDays: params.expiresInDays ? String(params.expiresInDays) : undefined
         }
 
         const req = await this.api.$post(`/upload_session/start`,{ form: formData });
